@@ -71,6 +71,9 @@ impl Tracker {
 
         let new_entry = format!("{} {} {} {}\n", project_code, task, end, start);
 
+        // TODO: Add a check for duplicate entries, and throw an error if the record is already
+        // existing
+
         file.write_all(new_entry.as_bytes()).await?;
         file.flush().await?;
 
