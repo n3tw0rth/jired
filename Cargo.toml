@@ -4,6 +4,10 @@ version = "1.0.0"
 edition = "2021"
 license = "MIT"
 keywords = ["cli", "time-logging","jira","clockify"]
+description = "A command-line tool for logging time across multiple time tracking platforms including Jira, Clockify, and more."
+homepage = "https://github.com/n3tw0rth/jired/blob/dev/readme.md"
+documentation = "https://github.com/n3tw0rth/jired/blob/dev/readme.md"
+repository = "https://github.com/n3tw0rth/jired"
 
 [dependencies]
 async-trait = "0.1.88"
@@ -35,3 +39,8 @@ clippy = "0.0.302"
 
 [profile.dev]
 incremental = true
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
