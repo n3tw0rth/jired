@@ -124,14 +124,6 @@ impl Board for Jira {
                     }
                 };
 
-                //let start_and_end_slice =
-                //match till.as_ref().unwrap_or(&StartSubcommandA::default()) {
-                //    StartSubcommandA::Till { till, from } => (till, from.unwrap_or_default()),
-                //};
-
-                //let end_time = match start_and_end_slice.clone().1 {
-                //    StartSubcommandB::From { start } => start,
-                //};
                 let start_time = till
                     .as_ref()
                     .unwrap_or(&StartSubcommandA::default())
