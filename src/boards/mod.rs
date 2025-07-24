@@ -8,13 +8,13 @@ use crate::{Args, ProjectType};
 #[async_trait]
 pub trait Board {
     async fn new() -> Self;
-    async fn init(self, args: Args) -> Result<()>;
+    async fn init(self, args: &Args) -> Result<()>;
     async fn get_project_issues(&mut self, project_code: &str) -> Result<()>;
-    async fn process_arguments(&mut self, args: Args) -> Result<()>;
+    async fn process_arguments(&mut self, args: &Args) -> Result<()>;
     async fn logout(&self) -> Result<()>;
     async fn pick_issue(&self, issues: Vec<JiraIssue>) -> Result<(String, String)>;
     async fn fuzzy_search(&mut self, project_code: &str, pattern: &str) -> Result<Vec<JiraIssue>>;
-    async fn add(&self, project_code: ProjectType, key: &str, pattern: &str) -> Result<()>;
+    async fn add(&self, project_code: &ProjectType, key: &str, pattern: &str) -> Result<()>;
 }
 
 /// These structs defines the jira issues REST API reponse

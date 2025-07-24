@@ -29,6 +29,7 @@ impl ConfigParser {
 ]
 time_zone = 5.5
 editor = "nvim"
+
 [[clockify_projects]]
 code = ""
 key = ""

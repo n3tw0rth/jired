@@ -105,3 +105,30 @@ impl Default for StartSubcommandB {
         }
     }
 }
+
+impl StartSubcommandA {
+    /// returns the end value
+    fn get_value(&self) -> String {
+        match self {
+            StartSubcommandA::Till { till, from: _ } => till.clone(),
+        }
+    }
+
+    /// returns the start value
+    fn get_start(&self) -> String {
+        match self {
+            StartSubcommandA::Till { till: _, from } => {
+                from.clone().unwrap_or_default().get_start()
+            }
+        }
+    }
+}
+
+/// returns the start time
+impl StartSubcommandB {
+    fn get_start(self) -> String {
+        match self {
+            StartSubcommandB::From { start } => start.clone(),
+        }
+    }
+}

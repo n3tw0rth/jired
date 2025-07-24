@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
     let config = ConfigParser::parse().await?;
     let args = Args::parse();
 
-    Jira::new().await.init(args.clone()).await?;
+    Jira::new().await.init(&args).await?;
 
     let clocks = config.get_clocks()?;
     for clock in clocks {

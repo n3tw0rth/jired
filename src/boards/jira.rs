@@ -8,7 +8,7 @@ use tracing::info;
 use crate::boards::{JiraIssue, JiraIssues};
 use crate::common::{helpers, tracker::Tracker, Secrets};
 use crate::error::{Error, Result};
-use crate::{Args, Commands, ProjectType, StartSubcommandA, StartSubcommandB};
+use crate::{Args, Commands, ProjectType, StartSubcommandA};
 
 use super::Board;
 
@@ -88,9 +88,9 @@ impl Board for Jira {
         }
     }
 
-    async fn process_arguments(&mut self, args: Args) -> Result<()> {
+    async fn process_arguments(&mut self, args: &Args) -> Result<()> {
         info!("Processing Arguments");
-        match args.command {
+        match &args.command {
             Commands::Start {
                 project_code,
                 pattern,
@@ -107,7 +107,7 @@ impl Board for Jira {
                 // can stop individual task using the stop subcommand passing the index of the item
                 // in the list)
 
-                let search_result = self.fuzzy_search(&project_code, &pattern).await?;
+                let search_result = self.fuzzy_search(project_code, pattern).await?;
 
                 if search_result.is_empty() {
                     return Err(Error::CustomError(
@@ -124,26 +124,29 @@ impl Board for Jira {
                     }
                 };
 
-                let start_and_end_slice = match till.unwrap_or_default() {
-                    StartSubcommandA::Till { till, from } => (till, from.unwrap_or_default()),
-                };
+                //let start_and_end_slice =
+                //match till.as_ref().unwrap_or(&StartSubcommandA::default()) {
+                //    StartSubcommandA::Till { till, from } => (till, from.unwrap_or_default()),
+                //};
 
-                let end_time = match start_and_end_slice.clone().1 {
-                    StartSubcommandB::From { start } => start,
-                };
+                //let end_time = match start_and_end_slice.clone().1 {
+                //    StartSubcommandB::From { start } => start,
+                //};
+                let start_time = till
+                    .as_ref()
+                    .unwrap_or(&StartSubcommandA::default())
+                    .get_start();
+                let end_time = till
+                    .as_ref()
+                    .unwrap_or(&StartSubcommandA::default())
+                    .get_value();
 
                 // stop any ongoing task, assuming the user stopped the the last task at current time
                 self.tracker.stop_current("-1".to_string()).await?;
 
                 // Write the record into the file
                 self.tracker
-                    .create_entry(
-                        &project_code,
-                        &task_id,
-                        start_and_end_slice.0,
-                        end_time,
-                        task_summary,
-                    )
+                    .create_entry(project_code, &task_id, end_time, start_time, task_summary)
                     .await?
             }
             Commands::Logout => {
@@ -151,7 +154,7 @@ impl Board for Jira {
             }
             Commands::Stop { at } => {
                 let end_time = match at {
-                    Some(at) => at,
+                    Some(at) => at.clone(),
                     None => String::from("-1"),
                 };
 
@@ -161,7 +164,7 @@ impl Board for Jira {
                 let re = Regex::new(r"^\d{4}-\d{2}-\d{2}$")
                     .map_err(|e| Error::CustomError(e.to_string()))?;
 
-                if !re.is_match(&date) {
+                if !re.is_match(date) {
                     return Err(Error::CustomError(
                         "invalid time format. Support only YYYY-MM-DD".to_string(),
                     ));
@@ -188,7 +191,7 @@ impl Board for Jira {
                 project_type,
                 key,
                 pattern,
-            } => self.add(project_type, &key, &pattern).await?,
+            } => self.add(project_type, key, pattern).await?,
             _ => {}
         }
 
@@ -221,7 +224,7 @@ impl Board for Jira {
 
     /// check if the user is authenticated by checking if username and the apikeys is_empty()
     /// is unauthenticated the user will prompt to authenticate
-    async fn init(mut self, args: Args) -> Result<()> {
+    async fn init(mut self, args: &Args) -> Result<()> {
         info!("jira init");
         let jira_api_token =
             Secrets::get(&JiraSecrets::JiraApiToken.to_string()).unwrap_or_default();
@@ -326,7 +329,7 @@ impl Board for Jira {
     }
 
     //WIP: adding jira projects
-    async fn add(&self, project_code: ProjectType, _key: &str, _pattern: &str) -> Result<()> {
+    async fn add(&self, project_code: &ProjectType, _key: &str, _pattern: &str) -> Result<()> {
         if project_code
             .to_possible_value()
             .unwrap_or_default()
