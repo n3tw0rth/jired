@@ -12,11 +12,11 @@ impl Clock for JiraClock {
         Self {}
     }
 
-    async fn init(&mut self, _args: Args) -> Result<()> {
+    async fn init(&mut self, _args: &Args) -> Result<()> {
         Ok(())
     }
 
-    async fn process_arguments(&mut self, _args: Args) -> Result<()> {
+    async fn process_arguments(&mut self, _args: &Args) -> Result<()> {
         Ok(())
     }
 

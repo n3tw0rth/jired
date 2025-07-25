@@ -55,11 +55,15 @@ id = ""
     pub fn set_project(
         &mut self,
         _type: &str,
-        key: String,
+        key: &String,
         code: String,
         id: String,
     ) -> Result<&mut Self> {
-        let project = Project { id, code, key };
+        let project = Project {
+            id,
+            code,
+            key: key.to_owned(),
+        };
         self.config
             .clockify_projects
             .get_or_insert_with(Vec::new)

@@ -36,7 +36,7 @@ impl Clock for ClockifyClock {
         }
     }
 
-    async fn init(&mut self, args: Args) -> Result<()> {
+    async fn init(&mut self, args: &Args) -> Result<()> {
         info!("init clockify");
         let api_token = Secrets::get(&ClockifySecrets::ApiToken.to_string()).unwrap_or_default();
         let workspace_id =
@@ -64,8 +64,8 @@ impl Clock for ClockifyClock {
         Ok(())
     }
 
-    async fn process_arguments(&mut self, args: Args) -> Result<()> {
-        match args.command {
+    async fn process_arguments(&mut self, args: &Args) -> Result<()> {
+        match &args.command {
             Commands::Log => self.log().await?,
             Commands::Add {
                 project_type,
@@ -192,9 +192,9 @@ impl ClockifyClock {
     /// This method is used to add a new project and save it in the config file
     pub async fn add_new_project(
         &self,
-        project_type: ProjectType,
-        key: String,
-        pattern: String,
+        project_type: &ProjectType,
+        key: &String,
+        pattern: &String,
     ) -> Result<()> {
         if project_type
             .to_possible_value()
